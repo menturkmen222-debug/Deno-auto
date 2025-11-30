@@ -2,38 +2,10 @@
   "$schema": "https://deno.land/x/deno@v1.45.0/cli/schemas/config-file.v1.json",
   "tasks": {
     "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv main.ts",
-    "start": "deno run --allow-net --allow-env --unstable-kv main.ts",
-    "check": "deno check main.ts",
-    "fmt": "deno fmt",
-    "lint": "deno lint"
+    "start": "deno run --allow-net --allow-env --unstable-kv main.ts"
   },
   "compilerOptions": {
     "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "useUnknownInCatchVariables": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "noFallthroughCasesInSwitch": true
-  },
-  "fmt": {
-    "useTabs": false,
-    "lineWidth": 100,
-    "indentWidth": 2,
-    "semiColons": true,
-    "singleQuote": false
-  },
-  "lint": {
-    "rules": {
-      "tags": ["recommended"]
-    }
-  },
-  "imports": {}
+    "noImplicitAny": true
+  }
 }
