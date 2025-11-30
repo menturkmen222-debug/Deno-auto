@@ -2,21 +2,38 @@
 import { handleUpload } from "./routes/upload.ts";
 import { handleSchedule } from "./routes/schedule.ts";
 
-Deno.serve(async (req) => {
+// Tanlash uchun oddiy monitoring (ixtiyoriy)
+async function handleHealth(): Promise<Response> {
+  return new Response("✅ OK", { status: 200 });
+}
+
+// Asosiy server
+Deno.serve(async (req: Request): Promise<Response> => {
   const url = new URL(req.url);
 
-  if (url.pathname === "/upload-video" && req.method === "POST") {
-    return handleUpload(req);
-  }
+  try {
+    // Salomatlik tekshiruvi
+    if (url.pathname === "/") {
+      return handleHealth();
+    }
 
-  if (url.pathname === "/queue-status") {
-  return handleStatus();
-}
-  
-  if (url.pathname === "/run-schedule" && req.method === "POST") {
-    // GitHub Actionsdan kelganligini tekshirish (ixtiyoriy)
-    return handleSchedule();
-  }
+    // Video yuklash — POST
+    if (url.pathname === "/upload-video" && req.method === "POST") {
+      return await handleUpload(req);
+    }
 
-  return new Response("Not found", { status: 404 });
+    // Scheduler — POST (GitHub Actions tomonidan chaqiriladi)
+    if (url.pathname === "/run-schedule" && req.method === "POST") {
+      return await handleSchedule();
+    }
+
+    // Barcha boshqa so'rovlar — 404
+    return new Response("❌ Not Found", { status: 404 });
+  } catch (err) {
+    console.error("Server xatosi:", err);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 });
