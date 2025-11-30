@@ -1,4 +1,4 @@
-// type s.ts
+// types.ts
 export type Platform = "youtube" | "tiktok" | "instagram" | "facebook";
 export type ChannelId = "channel_1" | "channel_2" | "channel_3" | "channel_4" | "channel_5";
 
