@@ -9,6 +9,10 @@ Deno.serve(async (req) => {
     return handleUpload(req);
   }
 
+  if (url.pathname === "/queue-status") {
+  return handleStatus();
+}
+  
   if (url.pathname === "/run-schedule" && req.method === "POST") {
     // GitHub Actionsdan kelganligini tekshirish (ixtiyoriy)
     return handleSchedule();
