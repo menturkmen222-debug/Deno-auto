@@ -1,0 +1,14 @@
+name: Run Video Scheduler
+on:
+  schedule:
+    - cron: "0 */2 * * *"  # Har 2 soatda
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Deno Deploy endpoint
+        run: |
+          curl -X POST https://your-project.deno.dev/run-schedule \
+               -H "Content-Type: application/json"
