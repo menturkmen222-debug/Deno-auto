@@ -1,8 +1,6 @@
 {
-  "$schema": "https://deno.land/x/deno@v1.45.0/cli/schemas/config-file.v1.json",
   "tasks": {
-    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv main.ts",
-    "start": "deno run --allow-net --allow-env --unstable-kv main.ts"
+    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv main.ts"
   },
   "compilerOptions": {
     "strict": true,
