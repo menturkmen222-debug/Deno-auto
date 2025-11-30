@@ -1,41 +1,41 @@
-// routes/schedule.ts
-import { getPendingVideos, updateVideoStatus } from "../db/queue.ts";
+import { getPendingVideo, markAsUploaded } from "../db/queue.ts";
 import { generateMetadata } from "../services/groq.ts";
 import { uploadToYouTube } from "../services/platforms/youtube.ts";
-// boshqa platform importlari ham qo'shiladi
+import { uploadToTikTok } from "../services/platforms/tiktok.ts";
+import { uploadToInstagram } from "../services/platforms/instagram.ts";
+import { uploadToFacebook } from "../services/platforms/facebook.ts";
 
-const PLATFORM_UPLOADERS = {
-  youtube: uploadToYouTube,
-  // tiktok: uploadToTikTok,
-  // instagram: uploadToInstagram,
-  // facebook: uploadToFacebook,
-};
+const PLATFORMS = ["youtube", "tiktok", "instagram", "facebook"] as const;
 
 export async function handleSchedule(): Promise<Response> {
-  const pending = await getPendingVideos();
-  if (pending.length === 0) {
-    return new Response("No pending videos", { status: 200 });
-  }
+  const video = await getPendingVideo(); // Bitta video oladi
+  if (!video) return new Response("No pending videos", { status: 200 });
 
-  for (const video of pending) {
-    try {
-      await updateVideoStatus(video.id, "processing");
-      
-      const meta = await generateMetadata(video.prompt);
-      await updateVideoStatus(video.id, "processing", meta);
+  const meta = await generateMetadata(video.prompt);
+  const channelIndex = video.channelIndex;
 
-      const uploader = PLATFORM_UPLOADERS[video.channel];
-      if (!uploader) {
-        throw new Error(`No uploader for ${video.channel}`);
-      }
+  // Barcha platformalarga yuklash
+  const results = await Promise.allSettled(
+    PLATFORMS.map(async (platform) => {
+      const uploader = {
+        youtube: uploadToYouTube,
+        tiktok: uploadToTikTok,
+        instagram: uploadToInstagram,
+        facebook: uploadToFacebook,
+      }[platform];
 
-      const success = await uploader({ ...video, ...meta });
-      await updateVideoStatus(video.id, success ? "uploaded" : "failed");
-    } catch (err) {
-      console.error(`Failed to process ${video.id}:`, err);
-      await updateVideoStatus(video.id, "failed");
-    }
-  }
+      return await uploader({
+        videoUrl: video.videoUrl,
+        title: meta.title,
+        description: meta.description,
+        tags: meta.tags,
+        channelIndex,
+      });
+    })
+  );
 
-  return new Response(`Processed ${pending.length} videos`, { status: 200 });
+  const success = results.every(r => r.status === "fulfilled");
+  await markAsUploaded(video.id, success);
+
+  return new Response(success ? "✅ Uploaded" : "⚠️ Partial fail", { status: 200 });
 }
