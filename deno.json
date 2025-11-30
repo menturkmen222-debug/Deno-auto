@@ -1,8 +1,8 @@
 {
   "$schema": "https://deno.land/x/deno@v1.45.0/cli/schemas/config-file.v1.json",
   "tasks": {
-    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --unstable-kv main.ts",
-    "start": "deno run --allow-net --allow-env --allow-read --allow-write --unstable-kv main.ts",
+    "dev": "deno run --allow-net --allow-env --allow-read --unstable-kv main.ts",
+    "start": "deno run --allow-net --allow-env --unstable-kv main.ts",
     "check": "deno check main.ts",
     "fmt": "deno fmt",
     "lint": "deno lint"
@@ -23,15 +23,6 @@
     "allowUnusedLabels": false,
     "noFallthroughCasesInSwitch": true
   },
-  "imports": {
-    "@std/assert": "jsr:@std/assert@1.0.0",
-    "@std/fmt": "jsr:@std/fmt@1.0.0"
-  },
-  "lint": {
-    "rules": {
-      "tags": ["recommended"]
-    }
-  },
   "fmt": {
     "useTabs": false,
     "lineWidth": 100,
@@ -39,5 +30,10 @@
     "semiColons": true,
     "singleQuote": false
   },
-  "unstable": ["kv"]
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "imports": {}
 }
